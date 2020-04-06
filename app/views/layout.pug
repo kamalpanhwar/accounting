@@ -1,0 +1,36 @@
+doctype html
+html(lang="en")
+  head
+    meta(http-equi='Content-Type' content='text/html; charset=UTF-8')
+    meta(name='viewport', content='width=devise-width, initial-scale=1,maximum-scale=1.0')
+    title= Accounting
+    link(rel='stylesheet', href="https://fonts.googleapis.com/icon?family=Material+Icons")
+    link(rel='stylesheet', href='/css/materialize.min.css')
+    link(rel='stylesheet', href='/css/style.css')
+  body
+    nav.light-blue.lighten-1(role='navigation')
+      .nav-wrapper.container
+        a#logo-container.brand-logo(href='#') WebLedger
+        ul.right.hide-on-med-and-down
+          li
+            a(href='#') Login 
+          li
+            a(href='#') Signup 
+        ul#nav-mobile.sidenav
+          li
+            a(href='#') Navbar Link
+        a.sidenav-trigger(href='#' data-target='nav-mobile')
+          i.material-icons menu
+    #index-banner.section.no-pad-bot
+      .container
+        .div.row
+          .div.col.s2
+            ul.sidenav-fixed
+              li
+                a(href='#') Navbar Link
+          .div.col.s10
+            block content
+              br
+              br
+    script(src='js/materialize.min.js')
+    script(src='js/jquery-2.1.1.min.js')

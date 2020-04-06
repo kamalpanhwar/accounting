@@ -1,0 +1,23 @@
+{
+  "name": "accounting",
+  "version": "1.0.0",
+  "description": "This is accounting system, let user to manage his bookkeping",
+  "main": "index.js",
+  "author": "Kamal Uddin Panhwar <kamalpanhwar@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^3.2.0",
+    "compression": "~1.4.4",
+    "debug": "^4.1.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "moment": "^2.24.0",
+    "mongoose": "^5.9.7",
+    "morgan": "^1.10.0",
+    "pug": "2.0.0.-bata11",
+    "validator": "^13.0.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}
