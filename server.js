@@ -1,7 +1,9 @@
 const express = require('express'),
   morgan = require('morgan'),
   path = require('path'),
-  createError = require('http-errors')
+  createError = require('http-errors'),
+  bodyParser = require('body-parser')
+
 require('dotenv').config()
 
 // Initialize server
@@ -12,15 +14,15 @@ var MongoDB = require('./db/database'),
   userRouter = require('./routes/user')
 
 app.use(morgan('combined'))
-
+app.use(express.urlencoded({extended: false}))
 // Err of ianything happen in DB connection or any other promise
 process.on('unhandledRejection', (reason, p) => {
   console.log('Unhandle Rejection at: ', p, 'reason:', reason)
 })
 
+app.use(express.static(path.join(__dirname, 'public')))
 app.set('views', path.join(__dirname, 'app/views'))
 app.set('view engine', 'pug')
-app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', userRouter)
 
 // Create 404 error reporting
