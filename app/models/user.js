@@ -1,6 +1,8 @@
 var mongoose = require('mongoose')
 var validator = require('validator')
 var Schema = mongoose.Schema
+const bcrypt = require('bcrypt')
+const crypto = require('crypto')
 
 var UserSchema = new Schema(
   {
@@ -38,6 +40,21 @@ var UserSchema = new Schema(
   },
   {timestamps: true}
 )
+
+UserSchema.pre('save', function(next) {
+  const user = this
+  if (!user.isModified('encrypted_password')) return next()
+  bcrypt.genSalt(10, function(err, salt) {
+    if (err) return next(err)
+    bcrypt.hash(user.encrypted_password, salt, function(err, hash) {
+      if (err) return next(err)
+      ;(token = crypto.randomBytes(20).toString('hex')),
+        (user.encrypted_password = hash)
+      user.confirmation_token = token
+      next()
+    })
+  })
+})
 
 UserSchema.virtual('url').get(function() {
   return '/user/' + this._id

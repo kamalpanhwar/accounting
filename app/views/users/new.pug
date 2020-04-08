@@ -6,10 +6,11 @@ block content
   form.col.s12#signup(method='POST' action='')
     .row
       .input-field.col.m6
-        input.validate#name(type='text' placeholder='Your name', required='true' name='name', value=(undefined===user ? '' : user.name))
+        input.validate#name(type='text' placeholder='Your name',
+        required='true', name='name', value=(undefined===user ? '' : user.name))
         label(for='name') Your Name
       .input-field.col.m6
-        input.validate#email(type='email', required='true', name='email')
+        input.validate#email(type='email', required='true', name='email', value=(undefined===user ? "" : user.email))
         label(for='email') Email
     .row
       .input-field.col.m6
@@ -21,14 +22,15 @@ block content
         label(for='password_confirm') Confirm Password
     .row
       .input-field.col.m12
-         input.validate#organization(type='text', required='true', name='organization')
+         input.validate#organization(type='text', required='true',
+         name='organization', value=(undefined===user ? '' : user.organization))
          label(for='organization') Your Organization
     .row
       .input-field.col.m6
-          input.validate#username(type='text', required='true' name='username')
+          input.validate#username(type='text', required='true' name='username' value=(undefined===user ? '' : user.username))
           label(for='username') Username
       .input-field.col.m6
-          input.validate#mobile(type='text', required='true' name='mobile')
+          input.validate#mobile(type='text', required='true' name='mobile' value=(undefined===user ? '' : user.mobile))
           label(for='mobile') Mobile Number
     .row
       .input-field.col.m6

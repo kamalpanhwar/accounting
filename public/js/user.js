@@ -7,6 +7,7 @@ $('#signup').validate({
     email: {
       required: true,
       email: true,
+      remote: '/system/check_user',
     },
     encrypted_password: {
       required: true,
@@ -18,7 +19,10 @@ $('#signup').validate({
     organization: {
       required: true,
     },
-    username: 'required',
+    username: {
+      required: true,
+      remote: '/system/check_user',
+    },
     mobile: {
       required: true,
       minlength: 11,
@@ -34,10 +38,12 @@ $('#signup').validate({
     username: {
       required: 'Username is required',
       minlength: 'ENter at least 5 characters',
+      remote: 'Username already exists!',
     },
     email: {
       required: 'Email is required field',
       email: 'It is invalid email',
+      remote: 'Email already exists!',
     },
     organization: 'Enter your organization name',
     currency: 'Please select currency',

@@ -3,6 +3,7 @@ const express = require('express'),
   path = require('path'),
   createError = require('http-errors'),
   bodyParser = require('body-parser')
+global.appRoot = path.resolve(__dirname)
 
 require('dotenv').config()
 
