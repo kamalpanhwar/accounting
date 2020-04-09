@@ -1,0 +1,36 @@
+extends ../layout
+
+block content
+    center
+      .section
+      if messages
+        p.error= messages
+      h5.indigo-text Please, login into your account
+      .section
+      .container
+        .z-depth-1.grey.lighten-3.row(style='display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;')
+          form.col.s12#login(method='POST' action='')
+            .row
+              .col.s12
+            .row
+              .input-field.col.s12
+                input#username.validate(type='email' name='username' required='true')
+                label(for='email') Enter your email
+            .row
+              .input-field.col.s12
+                input#password.validate(type='password' name='password' required='true')
+                label(for='password') Enter your password
+              label(style='float: right;')
+                a.pink-text(href='#!')
+                  b Forgot Password?
+            br
+            center
+              .row
+                button.col.s12.btn.btn-large.waves-effect.indigo(type='submit' name='btn_login') Login
+      a(href='/system/signup') Create account
+    .section
+    .section
+
+block scripts
+  script(src='/js/jquery.validate.js')
+  script(src='/js/user.js')

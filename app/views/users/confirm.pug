@@ -3,3 +3,7 @@ extends ../layout
 block content
   h3= title
   p Thank you for signup, please check your email to confirm
+  p 
+  p In case did not got email, please click following link to resent email
+  p
+    a(href='/system/resendToken/'+ user_email) Resend Email

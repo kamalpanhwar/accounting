@@ -2,21 +2,39 @@ const express = require('express'),
   morgan = require('morgan'),
   path = require('path'),
   createError = require('http-errors'),
-  bodyParser = require('body-parser')
-global.appRoot = path.resolve(__dirname)
+  bodyParser = require('body-parser'),
+  cookieParser = require('cookie-parser'),
+  session = require('express-session'),
+  flash = require('connect-flash'),
+  passport = require('passport')
 
+const MongoStore = require('connect-mongo')(session)
+global.appRoot = path.resolve(__dirname)
 require('dotenv').config()
 
-// Initialize server
+var MongoDB = require('./db/database')
+
 var app = express()
 
-// Local classes
-var MongoDB = require('./db/database'),
-  userRouter = require('./routes/user')
+app.use(
+  session({
+    secret: 'your_secret_key',
+    resave: false,
+    saveUninitialized: true,
+  })
+)
 
+var Router = require('./config/routes')
+
+app.use(express.json())
+app.use(flash())
 app.use(morgan('combined'))
 app.use(express.urlencoded({extended: false}))
-// Err of ianything happen in DB connection or any other promise
+app.use(cookieParser())
+
+app.use(passport.initialize())
+app.use(passport.session())
+
 process.on('unhandledRejection', (reason, p) => {
   console.log('Unhandle Rejection at: ', p, 'reason:', reason)
 })
@@ -24,9 +42,9 @@ process.on('unhandledRejection', (reason, p) => {
 app.use(express.static(path.join(__dirname, 'public')))
 app.set('views', path.join(__dirname, 'app/views'))
 app.set('view engine', 'pug')
-app.use('/', userRouter)
 
-// Create 404 error reporting
+app.use('/', Router)
+
 app.use(function(req, res, next) {
   next(createError(404))
 })

@@ -16,6 +16,7 @@ exports.verification = function(mailerOptions) {
     },
     template: mailerOptions.template,
   }
+  console.log(` Checking at mailer/send_email ${mailerOptions.template}`)
 
   Mailer.send(message)
     .then(console.log)

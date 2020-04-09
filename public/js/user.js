@@ -76,3 +76,43 @@ $('select[required]').css({
   width: 0,
   position: 'absolute',
 })
+
+$('#login').validate({
+  rules: {
+    email: {
+      required: true,
+      email: true,
+    },
+    password: {
+      required: true,
+      minlength: 5,
+    },
+  },
+  //For custom messages
+  messages: {
+    email: {
+      required: 'Email is required field',
+      email: 'Please provide valid email',
+    },
+    password: {
+      required: 'Password is required',
+      minlength: 'Enter at least 5 characters',
+    },
+  },
+  errorElement: 'div',
+  errorPlacement: function(error, element) {
+    var placement = $(element).data('error')
+    if (placement) {
+      $(placement).append(error)
+    } else {
+      error.insertAfter(element)
+    }
+  },
+})
+$('select[required]').css({
+  display: 'block',
+  height: 0,
+  padding: 0,
+  width: 0,
+  position: 'absolute',
+})

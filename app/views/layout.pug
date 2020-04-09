@@ -11,10 +11,17 @@ html(lang="en")
       .nav-wrapper.container
         a#logo-container.brand-logo(href='#') WebLedger
         ul.right.hide-on-med-and-down
-          li
-            a(href='/system/login') Login 
-          li
-            a(href='/system/signup') Signup 
+          if isLoggedIn
+            li
+              a(href='/system/logout') Logout 
+            li
+              Signup 
+          else
+            li
+              a(href='/system/login') Login 
+            li
+              a(href='/system/signup') Signup
+              
         a.sidenav-trigger(href='#' data-target='nav-mobile')
           i.material-icons menu
     #index-banner.section.no-pad-bot

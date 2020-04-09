@@ -60,4 +60,14 @@ UserSchema.virtual('url').get(function() {
   return '/user/' + this._id
 })
 
+UserSchema.methods.comparePassword = function(password) {
+  console.log(` it got Password: ${password} `)
+  return bcrypt.compareSync(password, this.encrypted_password)
+}
+
+UserSchema.methods.generatePasswordReset = function() {
+  this.reset_password_token = crypto.randomBytes(20).toString('hex')
+  this.reset_password_sent_at = Date.now() + 36000000
+}
+
 module.exports = mongoose.model('User', UserSchema)

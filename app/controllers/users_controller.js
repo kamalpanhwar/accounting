@@ -3,6 +3,39 @@ var Currency = require('../models/currency')
 const {body, validationResult} = require('express-validator/check')
 const {sanitizeBody} = require('express-validator/filter')
 const send_email = require('../mailer/send_email')
+const passport = require('passport')
+//require('../../config/passport')(passport)
+
+;(LocalStrategy = require('passport-local').Strategy),
+  passport.use(
+    new LocalStrategy(function(username, password, done) {
+      User.findOne({email: username}, function(err, user) {
+        if (err) {
+          return done(err)
+        }
+        if (!user) {
+          return done(null, false, {message: 'Incorrect Username'})
+        }
+        if (!user.comparePassword(password)) {
+          return done(null, false, {message: 'Incorrect password'})
+        }
+        return done(null, user)
+      })
+    })
+  )
+
+passport.serializeUser(function(user, cb) {
+  cb(null, user.id)
+})
+
+passport.deserializeUser(function(id, cb) {
+  User.findById(id, function(err, user) {
+    if (err) {
+      return cb(err)
+    }
+    cb(null, user)
+  })
+})
 
 exports.new = function(req, res, next) {
   Currency.find({}, 'name')
@@ -18,6 +51,46 @@ exports.new = function(req, res, next) {
       })
     })
 }
+
+exports.index = function(req, res, next) {
+  if (req.isAuthenticated()) {
+    res.redirect('/')
+  } else {
+    res.render('users/login', {
+      title: 'Login',
+      messages: req.flash('error'),
+    })
+  }
+}
+
+exports.login = passport.authenticate('local', {
+  failureRedirect: '/system/login/',
+  successRedirect: '/system',
+  failureFlash: true,
+})
+
+exports.loginold = [
+  body('username', 'Username must be specified')
+    .isLength({min: 1})
+    .trim()
+    .withMessage('Email must be specified'),
+
+  body('encrypted_password')
+    .isLength({min: 5})
+    .trim()
+    .withMessage('Password must be specified'),
+
+  sanitizeBody('username').escape(),
+  sanitizeBody('password').escape(),
+
+  (req, res, next) => {
+    passport.authenticate('local', {failureRedirect: '/system/login'}),
+      function(req, res) {
+        console.log('Issue')
+        res.redirect('/')
+      }
+  },
+]
 
 exports.create = [
   body('name')
@@ -63,10 +136,11 @@ exports.create = [
     .withMessage('Currency is required'),
   // Sanitize fields
   sanitizeBody('name').escape(),
-  sanitizeBody('encrypted_email').escape(),
+  sanitizeBody('encrypted_password').escape(),
   sanitizeBody('username').escape(),
   sanitizeBody('currency').escape(),
   sanitizeBody('email').escape(),
+  sanitizeBody('organization').escape(),
 
   (req, res, next) => {
     const errors = validationResult(req)
@@ -97,33 +171,73 @@ exports.create = [
         if (err) {
           return next(err)
         }
-
-        var mailOptions = {
-          name: user.name,
-          email: user.email,
-          token: user.verification_token,
-        }
-
-        let link =
-          'http://' +
-          req.headers.host +
-          '/system/verify/' +
-          user.confirmation_token
-        var mailOptions = {
-          from: process.env.DEFAULT_FROM,
-          to: user.email,
-          subject: 'Please confirm your email',
-          name: user.name,
-          verification_link: link,
-          template: './app/views/mailers/email_confirmation',
-        }
-
-        send_email.verification(mailOptions)
-        res.redirect('/system/confirm')
+        sendVerificationEmail(user, req)
+        res.redirect('/system/confirm/' + user.email)
       })
     }
   },
 ]
+
+async function sendVerificationEmail(user, req) {
+  var mailOptions = {
+    name: user.name,
+    email: user.email,
+    token: user.verification_token,
+  }
+
+  let link =
+    'http://' + req.headers.host + '/system/verify/' + user.confirmation_token
+  var mailOptions = {
+    from: process.env.DEFAULT_FROM,
+    to: user.email,
+    subject: 'Please confirm your email',
+    name: user.name,
+    verification_link: link,
+    template: './app/views/mailers/email_confirmation',
+  }
+
+  send_email.verification(mailOptions)
+}
+exports.resendToken = async (req, res) => {
+  try {
+    console.log(req.params.email)
+    const email = req.params.email
+
+    const user = await User.findOne({email: email})
+    //const user = await User.findOne({email: email}, function(error, user) {
+    //      if (error) {
+    //        console.log('error druing quering database')
+    //      }
+    //      console.log(user.name)
+    //    })
+    console.log(user.name)
+    if (!user) {
+      res.render('users/message', {
+        title: 'Email not associated',
+        message: `The email address ${email} is not associated with any account. Double-check your email address and try again.`,
+      })
+      return
+    }
+
+    if (user.approved) {
+      res.render('users/message', {
+        title: 'Your account is already approved',
+        message: `The email address ${email} is already apprvoed. Pleaswe login.`,
+      })
+      return
+    }
+
+    sendVerificationEmail(user, req)
+    res.redirect('/system/confirm/' + user.email)
+    return
+  } catch (err) {
+    res.render('users/message', {
+      title: 'Unhandled error occured',
+      message: `Unhandled error occured.`,
+    })
+    return
+  }
+}
 
 exports.verify = async function(req, res, next) {
   if (!req.params.token)
@@ -215,6 +329,7 @@ exports.check_username = async function(req, res, next) {
 exports.confirm = function(req, res, next) {
   res.render('users/confirm', {
     title: 'Confirmation',
+    user_email: req.params.email,
   })
 }
 
