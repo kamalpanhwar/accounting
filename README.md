@@ -7,7 +7,6 @@ Please copy env-sample to .env and modify your configuration.
 
 Run follwoing commands to setup
 `> yarn install`
-`> yarn start`
 
 ## To populate data
 
@@ -18,5 +17,9 @@ db urls.
 ```
 > node populateDB mongodb_url
 ```
+
+## To start
+
+`yarn start`
 
 You can browser localhost:3000 to see.
