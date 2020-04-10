@@ -2,6 +2,7 @@ var express = require('express')
 var router = express.Router()
 var users_controller = require('../app/controllers/users_controller')
 var homes_controller = require('../app/controllers/homes_controller')
+var accounts_controller = require('../app/controllers/accounts_controller')
 
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
@@ -23,17 +24,18 @@ router.get('/system/reset/:token', users_controller.reset)
 router.post('/system/reset/:token', users_controller.reset_password)
 router.get('/system/profile', users_controller.profile)
 router.post('/system/profile', users_controller.update)
-router.get('/system', isLoggedIn, homes_controller.home)
-//router.post(
-//  '/system/login',
-//  passport.authenticate('local', {
-//    successRedirect: '/',
-//    failureRedirect: '/system/login',
-//  })
-//)
+
 router.get('/system/confirm/:email', users_controller.confirm)
 router.get('/system/verify/:token', users_controller.verify)
 router.get('/system/check_user/', users_controller.check_username)
 router.get('/system/resendToken/:email', users_controller.resendToken)
+// sesssion routes
 
+router.get('/system', isLoggedIn, homes_controller.home)
+router.get('/system/accounts/new', isLoggedIn, accounts_controller.new)
+router.get('/system/accounts/:id', isLoggedIn, accounts_controller.show)
+router.get('/system/accounts/:id/edit', isLoggedIn, accounts_controller.edit)
+router.post('/system/accounts/:id', isLoggedIn, accounts_controller.update)
+router.post('/system/accounts/', isLoggedIn, accounts_controller.create)
+router.get('/system/accounts/', isLoggedIn, accounts_controller.index)
 module.exports = router
