@@ -9,13 +9,14 @@ html(lang="en")
   body
     nav.light-blue.lighten-1(role='navigation')
       .nav-wrapper.container
-        a#logo-container.brand-logo(href='#') WebLedger
+        a#logo-container.brand-logo(href='#') WebLedger - Dashboard
         ul.right.hide-on-med-and-down
           if isLoggedIn
             li
-              a(href='/system/logout') Logout 
+              a(href='/system/profile') Profile 
             li
-              Signup 
+              a(href='/system/logout') Logout 
+
           else
             li
               a(href='/system/login') Login 
@@ -28,6 +29,12 @@ html(lang="en")
       .container
         .div.row
           .div.col.m2.s12
+            if successes
+              for success in successes
+                div.alert.alert-success #{success}
+            if errors
+              for error in errors
+                div.alert.alert-danger #{error}
             ul.sidenav-fixed
               li
                 menu#1

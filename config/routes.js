@@ -21,6 +21,8 @@ router.get('/system/forget', users_controller.forget)
 router.post('/system/forget', users_controller.recover)
 router.get('/system/reset/:token', users_controller.reset)
 router.post('/system/reset/:token', users_controller.reset_password)
+router.get('/system/profile', users_controller.profile)
+router.post('/system/profile', users_controller.update)
 router.get('/system', isLoggedIn, homes_controller.home)
 //router.post(
 //  '/system/login',

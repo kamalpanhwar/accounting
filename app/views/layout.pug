@@ -26,6 +26,12 @@ html(lang="en")
       .container
         .div.row
           .div.col.m10.s12
+            if successes
+              for success in successes
+                div.alert.alert-success #{ success } 
+            if errors
+              for errors, i in errors
+                div.alert.alert-danger #{error}
             block content
 
     script(src='/js/jquery-2.1.1.min.js')

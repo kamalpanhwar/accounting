@@ -28,6 +28,16 @@ var Router = require('./config/routes')
 
 app.use(express.json())
 app.use(flash())
+
+app.use((req, res, next) => {
+  if (res.locals.errors) {
+    res.locals.errors = req.flash('error')
+  }
+  if (res.locals.errors) {
+    res.locals.successes = req.flash('success')
+  }
+  next()
+})
 app.use(morgan('combined'))
 app.use(express.urlencoded({extended: false}))
 app.use(cookieParser())

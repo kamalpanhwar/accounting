@@ -1,5 +1,8 @@
 extends ../dashboard
 
 block content
-  h2 Welcome to session pages.
+  h2= title
+  p= user.name
+  p= user.email
+  p= user.encrypted_password
 

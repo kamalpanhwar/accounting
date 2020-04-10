@@ -7,7 +7,8 @@ exports.index = function(req, res, next) {
 
 exports.home = function(req, res, next) {
   res.render('homes/home', {
-    title: 'Login',
+    title: 'Dashboard',
     isLoggedIn: req.isAuthenticated(),
+    user: req.user,
   })
 }

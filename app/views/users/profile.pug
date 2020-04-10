@@ -1,9 +1,9 @@
-extends ../layout
+extends ../dashboard
 
 block content
   h1= title
 
-  form.col.s12#signup(method='POST' action='')
+  form.col.s12#profile(method='POST' action='')
     .row
       .input-field.col.m6
         input.validate#name(type='text' placeholder='Your name',
@@ -12,14 +12,6 @@ block content
       .input-field.col.m6
         input.validate#email(type='email', required='true', name='email', value=(undefined===user ? "" : user.email))
         label(for='email') Email
-    .row
-      .input-field.col.m6
-        input.validate#encrypted_password(type='password', required='true',
-        name='encrypted_password')
-        label(for='encrypted_password') Password
-      .input-field.col.m6
-        input.validate#password_confirm(type='password', required='true', name='password_confirm')
-        label(for='password_confirm') Confirm Password
     .row
       .input-field.col.m12
          input.validate#organization(type='text', required='true',
@@ -45,7 +37,7 @@ block content
     .row
       .input-field.col.m6
         button.btn.waves-effect.waves-light(type='submit' name='action')
-          | Submit
+          | Update Profile
 
   if errors
     ul

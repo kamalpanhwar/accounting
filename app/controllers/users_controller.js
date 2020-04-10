@@ -38,18 +38,23 @@ passport.deserializeUser(function(id, cb) {
 })
 
 exports.new = function(req, res, next) {
-  Currency.find({}, 'name')
-    .populate('currency')
-    .sort([['name', 'ascending']])
-    .exec(function(err, currencies) {
-      if (err) {
-        return next(err)
-      }
-      res.render('users/new', {
-        title: 'Signup',
-        currencies: currencies,
+  if (req.isAuthenticated()) {
+    req.flash('success', 'You are already logged in')
+    res.redirect('/system')
+  } else {
+    Currency.find({}, 'name')
+      .populate('currency')
+      .sort([['name', 'ascending']])
+      .exec(function(err, currencies) {
+        if (err) {
+          return next(err)
+        }
+        res.render('users/new', {
+          title: 'Signup',
+          currencies: currencies,
+        })
       })
-    })
+  }
 }
 
 exports.index = function(req, res, next) {
@@ -73,6 +78,29 @@ exports.forget = function(req, res, next) {
     })
   }
 }
+
+exports.profile = function(req, res, next) {
+  if (req.isAuthenticated()) {
+    Currency.find({}, 'name')
+      .populate('currency')
+      .sort([['name', 'ascending']])
+      .exec(function(err, currencies) {
+        if (err) {
+          return next(err)
+        }
+        res.render('users/profile', {
+          title: 'Edit Profile',
+          currencies: currencies,
+          user: req.user,
+          isLoggedIn: req.isAuthenticated(),
+        })
+      })
+  } else {
+    req.flash('info', 'You are not logged in')
+    res.redirect('/system/login')
+  }
+}
+
 exports.recover = async function(req, res, next) {
   try {
     const {email} = req.body
@@ -142,6 +170,16 @@ exports.create = [
     .isLength({min: 1})
     .trim()
     .withMessage('Email must be specified'),
+
+  body('organization', 'Organization must be specified')
+    .isLength({min: 1})
+    .trim()
+    .withMessage('Organization must be specified'),
+  body('mobile', 'Mobile must be specified')
+    .isLength({min: 11})
+    .withMessage('Number must be of 11 digits')
+    .trim()
+    .withMessage('Mobile must be specified'),
   body('encrypted_password')
     .isLength({min: 5})
     .trim()
@@ -192,6 +230,7 @@ exports.create = [
       currency_id: req.body.currency,
       organization: req.body.organization,
       confirmation_sent_at: Date.now(),
+      mobile: req.body.mobile,
     })
     if (!errors.isEmpty()) {
       Currency.find({}, 'name').exec(function(err, currencies) {
@@ -213,6 +252,120 @@ exports.create = [
         }
         sendVerificationEmail(user, req)
         res.redirect('/system/confirm/' + user.email)
+      })
+    }
+  },
+]
+
+exports.update = [
+  //   (req, res, next) => {
+  //     if (!req.isAuthenticated()) {
+  //       req.flash('error', 'You are not loggedin Only for loggedin users.')
+  //       res.redirect('/system/login')
+  //       return
+  //     }
+  //   },
+  body('name')
+    .isLength({min: 5})
+    .withMessage('Name must be more 5 letters')
+    .trim()
+    .withMessage('Name is required field'),
+  body('email', 'Email must be specified')
+    .isLength({min: 1})
+    .trim()
+    .withMessage('Email must be specified'),
+
+  body('organization', 'Organization must be specified')
+    .isLength({min: 1})
+    .trim()
+    .withMessage('Organization must be specified'),
+  body('mobile', 'Mobile must be specified')
+    .isLength({min: 1})
+    .trim()
+    .withMessage('Mobile must be specified'),
+  body('username')
+    .isLength({min: 5})
+    .trim()
+    .withMessage('Username must be specified')
+    .custom((value, {req, loc, path}) => {
+      count = User.countDocuments({username: value}, function(error, count) {
+        if (error) {
+          console.log('unexpected error in searching username from database')
+        }
+      })
+      console.log(count)
+      if (count > 0) {
+        throw new Error('User not exists finally')
+      } else {
+        return value
+      }
+    }),
+  body('currency')
+    .isLength({min: 1})
+    .trim()
+    .withMessage('Currency is required'),
+  // Sanitize fields
+  sanitizeBody('name').escape(),
+  sanitizeBody('username').escape(),
+  sanitizeBody('currency').escape(),
+  sanitizeBody('email').escape(),
+  sanitizeBody('organization').escape(),
+  sanitizeBody('mobile').escape(),
+
+  (req, res, next) => {
+    const errors = validationResult(req)
+    var updatedUser = new User({
+      name: req.body.name,
+      email: req.body.email,
+      //encrypted_password: req.body.encrypted_password,
+      username: req.body.username,
+      currency_id: req.body.currency,
+      organization: req.body.organization,
+      confirmation_sent_at: Date.now(),
+      mobile: req.body.mobile,
+      //  _id: req.user._id,
+    })
+    if (!errors.isEmpty()) {
+      Currency.find({}, 'name').exec(function(err, currencies) {
+        if (err) {
+          next(err)
+        }
+        res.render('users/profile', {
+          title: 'Profile',
+          user: user,
+          currencies: currencies,
+          errors: errors.array(),
+        })
+      })
+      return
+    } else {
+      user = User.findOne({_id: req.user._id}, function(err, user) {
+        if (err) {
+          console.log(
+            'No such user found. There is db error in retrieving user'
+          )
+          return next(err)
+        }
+        console.log('I ssue in UCRRENCY ' + updatedUser.currency_id)
+        user.name = updatedUser.name
+        user.email = updatedUser.email
+        user.username = updatedUser.username
+        user.currency_id = updatedUser.currency_id
+        user.organization = updatedUser.organization
+        user.mobile = updatedUser.mobile
+        user.update_at = Date.now()
+        user.save(function(err) {
+          if (err) {
+            return next(err)
+          }
+          res.render('users/message', {
+            user: req.user,
+            title: 'Profile Updated',
+            message: 'Profile updated',
+            isLoggedIn: req.isAuthenticated(),
+          })
+          return
+        })
       })
     }
   },
