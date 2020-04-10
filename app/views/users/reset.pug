@@ -1,0 +1,39 @@
+extends ../layout
+
+block content
+    center
+      .section
+      if messages
+        p.error= messages
+      h4 Forget Password
+      h5.indigo-text Reset your password
+      .section
+      .container
+        .z-depth-1.grey.lighten-3.row(style='display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;')
+          form.col.s12#reset(method='POST' action='')
+            .row
+              .input-field.col.m12
+                input.validate#encrypted_password(type='password', required='true', name='encrypted_password')
+                label(for='encrypted_password') Password
+            .row
+              .input-field.col.m12
+                input.validate#password_confirm(type='password', required='true', name='password_confirm')
+                label(for='password_confirm') Confirm Password
+            .row
+              .input-field.col.m12
+                input#token(type='hidden', name='token', value=token)
+            br
+            center
+              .row
+                button.col.s12.btn.btn-large.waves-effect.indigo(type='submit' name='btn_login') Rest Password
+      a(href='/system/signup') Create account
+              
+              label(style='float: right;')
+                a.pink-text(href='/system/login')
+                  b &nbsp &nbsp  Login 
+    .section
+    .section
+
+block scripts
+  script(src='/js/jquery.validate.js')
+  script(src='/js/user.js')

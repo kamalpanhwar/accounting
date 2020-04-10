@@ -63,11 +63,51 @@ exports.index = function(req, res, next) {
   }
 }
 
+exports.forget = function(req, res, next) {
+  if (req.isAuthenticated()) {
+    res.redirect('/system')
+  } else {
+    res.render('users/forget', {
+      title: 'Forget Password',
+      messages: req.flash('error'),
+    })
+  }
+}
+exports.recover = async function(req, res, next) {
+  try {
+    const {email} = req.body
+    const user = await User.findOne({email})
+
+    if (!user) {
+      res.render('users/message', {
+        title: 'Email not associated',
+        message: `The email address ${email} is not associated with any account. Double-check your email address and try again.`,
+      })
+      return
+    }
+    user.generatePasswordReset()
+    await user.save()
+    sendPasswordResetEmail(user, req)
+    res.render('users/message', {
+      title: 'We sent you email to reset password',
+      message: `We sent email on ${email} please check and reset password.`,
+    })
+    return
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 exports.login = passport.authenticate('local', {
   failureRedirect: '/system/login/',
   successRedirect: '/system',
   failureFlash: true,
 })
+
+exports.logout = (req, res, next) => {
+  req.logout()
+  res.redirect('/')
+}
 
 exports.loginold = [
   body('username', 'Username must be specified')
@@ -198,6 +238,85 @@ async function sendVerificationEmail(user, req) {
 
   send_email.verification(mailOptions)
 }
+
+async function sendPasswordResetEmail(user, req) {
+  var mailOptions = {
+    name: user.name,
+    email: user.email,
+    token: user.verification_token,
+  }
+
+  let link =
+    'http://' + req.headers.host + '/system/reset/' + user.reset_password_token
+  var mailOptions = {
+    from: process.env.DEFAULT_FROM,
+    to: user.email,
+    subject: 'Rest your password',
+    name: user.name,
+    verification_link: link,
+    template: './app/views/mailers/reset_password',
+  }
+  send_email.reset_token(mailOptions)
+}
+
+exports.reset = async (req, res) => {
+  if (req.isAuthenticated()) {
+    res.redirect('/system')
+  } else {
+    try {
+      const {token} = req.params
+
+      const user = await User.findOne({reset_password_token: token})
+
+      if (!user) {
+        res.render('users/message', {
+          title: 'No such token found',
+          message: `Please check your email to click correct link with correct token.`,
+        })
+        return
+      }
+      res.render('users/reset', {
+        title: 'Reset password',
+        token: token,
+      })
+      return
+    } catch (err) {
+      console.log(err)
+    }
+  }
+}
+
+exports.reset_password = async function(req, res, next) {
+  try {
+    var token = req.params.token
+    const user = await User.findOne({reset_password_token: token})
+    if (!user) {
+      res.render('users/message', {
+        title: 'No such token found',
+        message: `Please check your email to click correct link with correct token.`,
+      })
+      return
+    }
+    user.encrypted_password = req.body.encrypted_password
+    user.save(function(err) {
+      if (err) {
+        res.render('users/message', {
+          title: 'Unexcepted error happen in saving password user',
+          message: 'Unhandled error occured while saving password users.',
+        })
+        return
+      }
+      res.render('users/message', {
+        title: 'You have changed password.',
+        message: 'You successfully changed password',
+      })
+      return
+    })
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 exports.resendToken = async (req, res) => {
   try {
     console.log(req.params.email)

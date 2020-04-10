@@ -14,8 +14,13 @@ function isLoggedIn(req, res, next) {
 router.get('/', homes_controller.index)
 router.get('/system/signup', users_controller.new)
 router.post('/system/signup', users_controller.create)
-router.post('/system/login', users_controller.login)
 router.get('/system/login', users_controller.index)
+router.post('/system/login', users_controller.login)
+router.get('/system/logout', users_controller.logout)
+router.get('/system/forget', users_controller.forget)
+router.post('/system/forget', users_controller.recover)
+router.get('/system/reset/:token', users_controller.reset)
+router.post('/system/reset/:token', users_controller.reset_password)
 router.get('/system', isLoggedIn, homes_controller.home)
 //router.post(
 //  '/system/login',

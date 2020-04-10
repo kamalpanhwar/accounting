@@ -22,9 +22,15 @@ html(lang="en")
             li
               a(href='/system/signup') Signup
               
+        a.sidenav-trigger(href='#' data-target='nav-mobile')
+          i.material-icons menu
     #index-banner.section.no-pad-bot
       .container
         .div.row
+          .div.col.m2.s12
+            ul.sidenav-fixed
+              li
+                menu#1
           .div.col.m10.s12
             block content
 
