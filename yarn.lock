@@ -525,6 +525,13 @@ core-util-is@1.0.2, core-util-is@~1.0.0:
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
   integrity sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
 
+country-currency-map@^2.1.7:
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/country-currency-map/-/country-currency-map-2.1.7.tgz#5c7d16b4aba42bf2eaa2760fb0856a5dbfd53666"
+  integrity sha512-rc5BDyhghXOrUzlmrwdeRikGXPy9jkOF6Z/ET84u2kvc7hxXUkqfq8VK7PPigK+um6xGPeU+Oz55YJK+Ur5H2Q==
+  dependencies:
+    lodash.findkey "4.6.0"
+
 country-language@^0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/country-language/-/country-language-0.1.7.tgz#7870f4ba125db9a6071f19737bd9ef9343ae35db"
@@ -1343,6 +1350,11 @@ lodash.filter@^4.4.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/lodash.filter/-/lodash.filter-4.6.0.tgz#668b1d4981603ae1cc5a6fa760143e480b4c4ace"
   integrity sha1-ZosdSYFgOuHMWm+nYBQ+SAtMSs4=
+
+lodash.findkey@4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.findkey/-/lodash.findkey-4.6.0.tgz#83058e903b51cbb759d09ccf546dea3ea39c4718"
+  integrity sha1-gwWOkDtRy7dZ0JzPVG3qPqOcRxg=
 
 lodash.flatten@^4.2.0:
   version "4.4.0"

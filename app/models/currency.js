@@ -4,7 +4,9 @@ var moment = require('moment')
 
 var CurrencySchema = new Schema(
   {
-    name: {type: String, required: true, unique: true},
+    abbr: {type: String, required: true, unique: true},
+    name: {type: String},
+    symbol: {type: String},
   },
   {timestamps: true}
 )
